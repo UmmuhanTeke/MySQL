@@ -1,0 +1,254 @@
+
+-- 1) D001 departmanındaki tüm çalışanları listele.
+select * from dept_manager where dept_no='D001';
+
+-- 2) 'İnsan Kaynakları' departmanındaki tüm çalışanları listele.
+select * from dept_manager where dept_no='d003';
+
+-- 3) Tüm çalışanların ortalama maaşını hesapla.
+select avg(salary) from salaries;
+
+-- 4) "Erkek" cinsiyetindeki tüm çalışanların ortalama maaşını hesapla.
+select avg(salary)
+from salaries
+left join employees on salaries.emp_no = employees.emp_no
+where employees.gender='M';
+
+-- 5) "Kadın" cinsiyetindeki tüm çalışanların ortalama maaşını hesapla.
+select avg(salary)
+from salaries
+left join employees on salaries.emp_no = employees.emp_no
+where employees.gender='F';
+
+-- 6) Maaşı 70.000'den yüksek olan "Satış" departmanındaki tüm çalışanları listele.
+select employees.first_name,employees.last_name,salaries.salary
+from employees.employees
+left join salaries on employees.emp_no = salaries.emp_no
+left join dept_emp on employees.emp_no = dept_emp.emp_no
+left join departments on dept_emp.dept_no = departments.dept_no
+where departments.dept_no='d007' and salaries.salary > 70000;
+
+-- 7) Bu sorgu, maaşı 50.000 ile 100.000 arasında olan çalışanları getirir.
+select * from employees
+left join salaries on employees.emp_no = salaries.emp_no
+where salaries.salary between 50000 and 100000;
+
+-- 8) Her departmanın ortalama maaşını hesapla (departman numarasına veya departman adına göre).
+select departments.dept_name,departments.dept_no,avg(salary)
+from departments
+left join dept_emp on dept_emp.dept_no = departments.dept_no
+left join salaries on dept_emp.emp_no =salaries.emp_no
+group by departments.dept_no,departments.dept_name;
+
+-- 9) Departman adlarını da içeren her departmanın ortalama maaşını hesapla
+select departments.dept_name,avg(salary)
+from departments
+left join dept_emp on dept_emp.dept_no = departments.dept_no
+left join salaries on dept_emp.emp_no = salaries.emp_no
+group by departments.dept_name,departments.dept_name;
+
+-- 10) '10102' iş numarasına sahip çalışanın tüm maaş değişikliklerini bul.
+select * from salaries;
+select * from salaries where emp_no=10102;
+
+-- 11) Maaş numarası '10102' olan çalışanın maaş artışlarını bul ('to_date' sütununu kullanarak).
+select * from salaries where emp_no='10102' order by to_date;
+
+-- 12) En yüksek maaşa sahip çalışanı bul.
+select employees.first_name,employees.last_name,salaries.salary
+from employees
+left join salaries on employees.emp_no = salaries.emp_no
+order by salaries.salary desc limit 1;
+
+-- 13) Her çalışanın en son maaşlarını bul.
+select salaries.emp_no,max(salary)
+from salaries
+group by emp_no;
+
+-- 14) "Satış" departmanındaki çalışanların adını, soyadını ve en yüksek maaşını listele.
+-- Listeyi en yüksek maaşa göre azalan şekilde sırala ve sadece en yüksek maaşa sahip çalışanı göster.
+select employees.first_name,employees.last_name,max(salary)
+from employees
+left join salaries on employees.emp_no = salaries.emp_no
+left join dept_emp on employees.emp_no = dept_emp.emp_no
+left join departments on dept_emp.dept_no = departments.dept_no
+where departments.dept_no='d007'
+group by employees.first_name,employees.last_name
+order by max(salary) desc limit 1;
+
+-- 15) Araştırma Departmanındaki Ortalama En Yüksek Maaşlı Çalışanı Bul
+select employees.first_name,employees.last_name,avg(salary)
+from employees
+left join salaries on employees.emp_no = salaries.emp_no
+left join dept_emp on employees.emp_no = dept_emp.emp_no
+left join departments on dept_emp.dept_no = departments.dept_no
+where departments.dept_no='d008'
+group by employees.first_name,employees.last_name
+order by avg(salary) desc limit 1;
+
+-- 16) Her departman için, kaydedilmiş en yüksek tek maaşı belirle. Departman adını, çalışanın adını,
+-- soyadını ve en yüksek maaş tutarını listele. Sonuçları en yüksek maaşa göre azalan şekilde sırala.
+
+-- 17) Her departmandaki en yüksek ortalama maaşa sahip çalışanları belirle. Departman adını,
+-- çalışanın adını, soyadını ve ortalama maaşı listele. Sonuçları departmanlarına göre azalan şekilde
+-- sırala, sadece kendi departmanlarında en yüksek ortalama maaşa sahip olanları göster.
+
+-- 18) 1990-01-01 tarihinden önce işe alınan tüm çalışanların adlarını, soyadlarını ve işe alınma
+-- tarihlerini alfabetik sırayla listele.
+select * from employees;
+select employees.first_name,employees.last_name,employees.hire_date
+from employees
+where employees.hire_date<'1990-01-01'
+order by employees.first_name,employees.last_name;
+
+-- 19)  1985-01-01 ile 1989-12-31 tarihleri arasında işe alınan tüm çalışanların adlarını, soyadlarını ve işe
+-- alınma tarihlerini işe alınma tarihine göre sıralı olarak listele.
+select employees.first_name,employees.last_name,employees.hire_date
+from employees
+where employees.hire_date between '1985-01-01' and '1989-12-31'
+order by employees.hire_date;
+
+-- 20) 1985-01-01 ile 1989-12-31 tarihleri arasında işe alınan Satış departmanındaki tüm çalışanların
+-- adlarını, soyadlarını, işe alınma tarihlerini ve maaşlarını, maaşa göre azalan şekilde sıralı olarak listele.
+select employees.first_name,employees.last_name,employees.hire_date,salaries.salary
+from employees
+left join salaries on employees.emp_no = salaries.emp_no
+left join dept_emp on employees.emp_no = dept_emp.emp_no
+left join departments on dept_emp.dept_no = departments.dept_no
+where departments.dept_no='d007' and employees.hire_date between '1985-01-01' and '1989-12-31'
+order by salaries.salary desc;
+
+-- 21)
+-- A- Erkek çalışanların sayısını bulun (179973)
+select employees.gender, count(*)
+from employees where gender='M';
+-- B- Kadın çalışanların sayısını belirleyin (120050)
+select employees.gender, count(*)
+from employees where gender='F';
+
+-- C- Gruplandırarak erkek ve kadın çalışanların sayısını bulun:
+select gender,count(*)
+from employees
+group by gender;
+
+-- D- Şirketteki toplam çalışan sayısını hesaplayın (300023)
+select count(*)
+from employees;
+
+-- 22)
+-- A- Kaç çalışanın benzersiz ilk adı olduğunu bulun (1275)
+select count(distinct employees.first_name) from employees;
+
+-- B- Farklı bölüm adlarının sayısını belirleyin (9)
+select count(distinct dept_name) from departments;
+
+-- 23) Her bölümdeki çalışan sayısını listele
+select departments.dept_name,count(dept_emp.emp_no)
+from departments
+left join dept_emp on departments.dept_no = dept_emp.dept_no
+group by departments.dept_name;
+
+-- 24) 1990-02-20 tarihinden sonraki son 5 yıl içinde işe alınan tüm çalışanları listele
+select employees.first_name,employees.last_name,employees.hire_date
+ from employees where hire_date between '1990-02-20' and '1995-02-20';
+
+ -- 25) "Annemarie Redmiles" adlı çalışanın bilgilerini (çalışan numarası, doğum tarihi, ilk adı, soyadı,
+-- cinsiyet, işe alınma tarihi) listele.
+select *
+from employees
+where first_name='Annemarie' and last_name='Redmiles';
+
+-- 26) - "Annemarie Redmiles" adlı çalışanın tüm bilgilerini (çalışan numarası, doğum tarihi, ilk adı,
+-- soyadı, cinsiyet, işe alınma tarihi, maaş, departman ve unvan) listele.
+select employees.*,salaries.salary,departments.dept_name,titles.title
+from employees
+left join salaries on employees.emp_no = salaries.emp_no
+left join dept_emp on employees.emp_no = dept_emp.emp_no
+left join departments on dept_emp.dept_no = departments.dept_no
+left join titles on titles.emp_no = employees.emp_no
+where first_name='Annemarie' and last_name='Redmiles';
+
+-- 27) D005 bölümündeki tüm çalışanları ve yöneticileri listele
+select *
+from employees
+left join dept_emp on dept_emp.emp_no = employees.emp_no
+left join dept_manager on dept_emp.dept_no = dept_manager.dept_no
+where dept_emp.dept_no='d005';
+
+-- 28) - '1994-02-24' tarihinden sonra işe alınan ve 50.000'den fazla kazanan tüm çalışanları listele
+select employees.first_name,employees.last_name,employees.hire_date,salaries.salary
+ from employees
+ left join salaries on salaries.emp_no = employees.emp_no
+ where hire_date > '1994-02-24' and salaries.salary>50000;
+
+ -- 29) "Satış" bölümünde "Yönetici" unvanıyla çalışan tüm çalışanları listele
+ select employees.*,departments.dept_name,titles.title
+from employees
+left join dept_emp on employees.emp_no = dept_emp.emp_no
+left join departments on dept_emp.dept_no = departments.dept_no
+left join titles on titles.emp_no = employees.emp_no
+where departments.dept_name='Sales' and titles.title='Manager';
+
+-- 30)  '10102' numaralı çalışanın en uzun süre çalıştığı departmanı bul
+select dept_emp.dept_no,departments.dept_name,(year(current_date()) - year(dept_emp.from_date)) as MaxTimeTable
+from dept_emp
+left join departments on departments.dept_no = dept_emp.dept_no
+where dept_emp.emp_no='10102'
+group by dept_emp.dept_no
+order by MaxTimeTable desc;
+
+-- 31) D004 bölümünde en yüksek maaş alan çalışanı bulun
+select employees.emp_no,employees.first_name,employees.last_name,max(salaries.salary)
+from employees
+left join salaries on employees.emp_no = salaries.emp_no
+left join dept_emp on employees.emp_no = dept_emp.emp_no
+where dept_emp.dept_no='D004'
+group by employees.emp_no
+order by max(salaries.salary) desc limit 1;
+
+-- 32) - '10102' numaralı çalışanın tüm pozisyon geçmişini bulun
+select emp_no,title,from_date,to_date
+from titles
+where emp_no='10102';
+
+-- 33)  Ortalama "çalışan yaşını" bulma
+select (year(current_date()) - (avg(year(birth_date)))) as AvgAge
+from employees;
+
+-- 34)  Bölüm başına çalışan sayısını bulma
+select departments.dept_name,count(dept_emp.emp_no)
+from departments
+left join dept_emp on departments.dept_no = dept_emp.dept_no
+group by departments.dept_name;
+
+-- 35)  110022 numaralı çalışanın yönetim geçmişini bulma
+select dept_manager.emp_no,dept_manager.dept_no,dept_manager.from_date,dept_manager.to_date
+from dept_manager
+where emp_no=110022;
+
+-- 36) Her çalışanın istihdam süresini bulma
+select employees.first_name,employees.last_name,(year(current_date())-(year(employees.hire_date))) as EmpHireDate
+from employees;
+-- 37) Her çalışanın en son unvan bilgisini bulma
+select titles.emp_no, max(titles.title)
+from titles
+group by emp_no;
+
+-- 38) 'D005' bölümünde yöneticilerin adını ve soyadını bulma
+select employees.first_name , employees.last_name
+from employees
+left join dept_manager on employees.emp_no = dept_manager.emp_no
+where dept_manager.dept_no='D005';
+
+-- 39) Çalışanları doğum tarihlerine göre sıralama
+select *  from employees order by birth_date;
+
+-- 40) Nisan 1992'de işe alınan çalışanları listeleme
+select * from employees
+where hire_date between '1992-04-01' and '1992-04-30';
+
+-- 41) '10102' numaralı çalışanın çalıştığı tüm bölümleri bulma
+select departments.dept_name
+from dept_emp
+inner join departments on departments.dept_no=dept_emp.dept_no
+where dept_emp.emp_no='10102';
